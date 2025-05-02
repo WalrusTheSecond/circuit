@@ -1,0 +1,6 @@
+Usage: javac CircuitTracer.java
+Usage: java CircuitTracer [-s | -q] [-c | -g] <filename>
+ -s: Use a stack for storage
+ -q: Use a queue for storage
+ -c: Output results to console
+ -g: Output results to GUI

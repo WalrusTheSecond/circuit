@@ -48,12 +48,12 @@ public class CircuitBoard {
 
 		if (!fileScan.hasNextInt()) {
 			fileScan.close();
-			throw new InvalidFileFormatException(filename);
+			throw new InvalidFileFormatException("Error reading dimensions: Expected number of rows.");
 		}
 		int rows = fileScan.nextInt();
 		if (!fileScan.hasNextInt()) {
 			fileScan.close();
-			throw new InvalidFileFormatException(filename);
+			throw new InvalidFileFormatException("Error reading dimensions: Expected number of columns.");
 
 		}
 		int cols = fileScan.nextInt();
@@ -70,36 +70,48 @@ public class CircuitBoard {
 		for(int i = 0; i < ROWS; i++){
 			if(!fileScan.hasNextLine()) {
 				fileScan.close();
-				throw new InvalidFileFormatException(filename);
+				throw new InvalidFileFormatException("Improper file formatting: Number of rows does not match expected.");
 			}
 			
 			String line = fileScan.nextLine().trim();
-			if (line.length() < COLS) {
-				throw new InvalidFileFormatException(filename);
+			String[] tokens = line.split("\\s+");
+
+			if (tokens.length != COLS) {
+				throw new InvalidFileFormatException("Improper file formatting: Number of columns does not match expected.");
 			}
+
 			for (int j = 0; j < COLS; j++){
-				char ch = line.charAt(j);
+				char ch = tokens[j].charAt(0);
 				if (ALLOWED_CHARS.indexOf(ch) == -1) {
-					throw new InvalidFileFormatException(filename);
+					throw new InvalidFileFormatException("Error reading board: Invalid character '" + ch + "' at row " + i + ", col " + j);
 				}
 				board[i][j] = ch;
 
 				if (ch == START) {
 					startingPoint = new Point(i, j);
+					startCount++;
 				}
 				if (ch == END) {
 					endingPoint = new Point(i, j);
+					endCount++;
 				}
 			}
 
 			
 		}
+		if (fileScan.hasNextLine()) {
+			//throw new InvalidFileFormatException();
+			throw new InvalidFileFormatException("File has extra lines beyond expected " + ROWS + " rows.");
+
+		}
 		if (startCount != 1 || endCount != 1) {
-			throw new InvalidFileFormatException("Expected one start and one end. Found " + startCount + " start(s), " + endCount + " end(s)");
+			//throw new InvalidFileFormatException("");
+			throw new InvalidFileFormatException("Expected one start and one end in file " + filename +". Found " + startCount + " start(s), " + endCount + " end(s)");
+
 		}
 		fileScan.close();
 		} catch(FileNotFoundException e) {
-			throw e;
+			throw new FileNotFoundException("The Scanner could not read the file: " + filename);
 		} 
 		
 		//TODO: parse the given file to populate the char[][]
