@@ -105,4 +105,4 @@ During development I faced lots of small issues, the main issue I was facing is 
  javac *.java 
 then it worked. So naturally I recompiled my program and it worked. 
 
-Another issue I faced was actually getting the CircuitTracer search algorithym to work. Luckily following the psudocode made things much easier.
+Another issue I faced was actually getting the CircuitTracer search algorithym to work. Luckily following the psudocode made things much easier than it otherwise could have been.
