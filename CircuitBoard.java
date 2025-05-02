@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 /**
  * Represents a 2D circuit board as read from an input file.
- *  
+ * 
  * @author mvail
  */
 public class CircuitBoard {
@@ -16,112 +16,119 @@ public class CircuitBoard {
 	/** location of row,col for '2' */
 	private Point endingPoint;
 
-	//constants you may find useful
-	private final int ROWS; //initialized in constructor
-	private final int COLS; //initialized in constructor
-	private final char OPEN = 'O';	//capital 'o', an open position
-	private final char CLOSED = 'X';//a blocked position
-	private final char TRACE = 'T';	//part of the trace connecting 1 to 2
-	private final char START = '1';	//the starting component
-	private final char END = '2';	//the ending component
-	private final String ALLOWED_CHARS = "OXT12"; //useful for validating with indexOf
+	// constants you may find useful
+	private final int ROWS; // initialized in constructor
+	private final int COLS; // initialized in constructor
+	private final char OPEN = 'O'; // capital 'o', an open position
+	private final char CLOSED = 'X';// a blocked position
+	private final char TRACE = 'T'; // part of the trace connecting 1 to 2
+	private final char START = '1'; // the starting component
+	private final char END = '2'; // the ending component
+	private final String ALLOWED_CHARS = "OXT12"; // useful for validating with indexOf
 
-	/** Construct a CircuitBoard from a given board input file, where the first
+	/**
+	 * Construct a CircuitBoard from a given board input file, where the first
 	 * line contains the number of rows and columns as ints and each subsequent
 	 * line is one row of characters representing the contents of that position.
 	 * Valid characters are as follows:
-	 *  'O' an open position
-	 *  'X' an occupied, unavailable position
-	 *  '1' first of two components needing to be connected
-	 *  '2' second of two components needing to be connected
-	 *  'T' is not expected in input files - represents part of the trace
-	 *   connecting components 1 and 2 in the solution
+	 * 'O' an open position
+	 * 'X' an occupied, unavailable position
+	 * '1' first of two components needing to be connected
+	 * '2' second of two components needing to be connected
+	 * 'T' is not expected in input files - represents part of the trace
+	 * connecting components 1 and 2 in the solution
 	 * 
 	 * @param filename
-	 * 		file containing a grid of characters
-	 * @throws FileNotFoundException if Scanner cannot open or read the file
+	 *                 file containing a grid of characters
+	 * @throws FileNotFoundException      if Scanner cannot open or read the file
 	 * @throws InvalidFileFormatException for any file formatting or content issue
 	 */
 	public CircuitBoard(String filename) throws FileNotFoundException {
-		try{
-		Scanner fileScan = new Scanner(new File(filename));
+		try {
+			Scanner fileScan = new Scanner(new File(filename));
 
-		if (!fileScan.hasNextInt()) {
-			fileScan.close();
-			throw new InvalidFileFormatException("Error reading dimensions: Expected number of rows.");
-		}
-		int rows = fileScan.nextInt();
-		if (!fileScan.hasNextInt()) {
-			fileScan.close();
-			throw new InvalidFileFormatException("Error reading dimensions: Expected number of columns.");
-
-		}
-		int cols = fileScan.nextInt();
-
-		fileScan.nextLine();
-
-		ROWS = rows; //replace with initialization statements using values from file
-		COLS = cols;
-		
-		board = new char[ROWS][COLS];
-		int startCount = 0; //To keep track of the start and ending
-		int endCount = 0;
-
-		for(int i = 0; i < ROWS; i++){
-			if(!fileScan.hasNextLine()) {
+			if (!fileScan.hasNextInt()) {
 				fileScan.close();
-				throw new InvalidFileFormatException("Improper file formatting: Number of rows does not match expected.");
+				throw new InvalidFileFormatException("Error reading dimensions: Expected number of rows.");
 			}
-			
-			String line = fileScan.nextLine().trim();
-			String[] tokens = line.split("\\s+");
+			int rows = fileScan.nextInt();
+			if (!fileScan.hasNextInt()) {
+				fileScan.close();
+				throw new InvalidFileFormatException("Error reading dimensions: Expected number of columns.");
 
-			if (tokens.length != COLS) {
-				throw new InvalidFileFormatException("Improper file formatting: Number of columns does not match expected.");
 			}
+			int cols = fileScan.nextInt();
 
-			for (int j = 0; j < COLS; j++){
-				char ch = tokens[j].charAt(0);
-				if (ALLOWED_CHARS.indexOf(ch) == -1) {
-					throw new InvalidFileFormatException("Error reading board: Invalid character '" + ch + "' at row " + i + ", col " + j);
-				}
-				board[i][j] = ch;
+			fileScan.nextLine();
 
-				if (ch == START) {
-					startingPoint = new Point(i, j);
-					startCount++;
+			ROWS = rows; // replace with initialization statements using values from file
+			COLS = cols;
+
+			board = new char[ROWS][COLS];
+			int startCount = 0; // To keep track of the start and ending
+			int endCount = 0;
+
+			for (int i = 0; i < ROWS; i++) {
+				if (!fileScan.hasNextLine()) {
+					fileScan.close();
+					throw new InvalidFileFormatException(
+							"Improper file formatting: Number of rows does not match expected.");
 				}
-				if (ch == END) {
-					endingPoint = new Point(i, j);
-					endCount++;
+
+				String line = fileScan.nextLine().trim();
+				String[] tokens = line.split("\\s+");
+
+				if (tokens.length != COLS) {
+					fileScan.close();
+					throw new InvalidFileFormatException(
+							"Improper file formatting: Number of columns does not match expected.");
 				}
+
+				for (int j = 0; j < COLS; j++) {
+					char ch = tokens[j].charAt(0);
+					if (ALLOWED_CHARS.indexOf(ch) == -1) {
+						fileScan.close();
+						throw new InvalidFileFormatException(
+								"Error reading board: Invalid character '" + ch + "' at row " + i + ", col " + j);
+					}
+					board[i][j] = ch;
+
+					if (ch == START) {
+						startingPoint = new Point(i, j);
+						startCount++;
+					}
+					if (ch == END) {
+						endingPoint = new Point(i, j);
+						endCount++;
+					}
+				}
+
 			}
+			if (fileScan.hasNextLine()) {
+				fileScan.close();
+				throw new InvalidFileFormatException("File has extra lines beyond expected " + ROWS + " rows.");
 
-			
-		}
-		if (fileScan.hasNextLine()) {
-			//throw new InvalidFileFormatException();
-			throw new InvalidFileFormatException("File has extra lines beyond expected " + ROWS + " rows.");
+			}
+			if (startCount != 1 || endCount != 1) {
+				fileScan.close();
+				throw new InvalidFileFormatException("Expected one start and one end in file " + filename + ". Found "
+						+ startCount + " start(s), " + endCount + " end(s)");
 
-		}
-		if (startCount != 1 || endCount != 1) {
-			//throw new InvalidFileFormatException("");
-			throw new InvalidFileFormatException("Expected one start and one end in file " + filename +". Found " + startCount + " start(s), " + endCount + " end(s)");
-
-		}
-		fileScan.close();
-		} catch(FileNotFoundException e) {
+			}
+			fileScan.close();
+		} catch (FileNotFoundException e) {
 			throw new FileNotFoundException("The Scanner could not read the file: " + filename);
-		} 
-		
-		//TODO: parse the given file to populate the char[][]
+		}
+
+		// TODO: parse the given file to populate the char[][]
 		// throw FileNotFoundException if Scanner cannot read the file
-		// throw InvalidFileFormatException if any issues are encountered while parsing the file
-		
-		
+		// throw InvalidFileFormatException if any issues are encountered while parsing
+		// the file
+
 	}
-	
-	/** Copy constructor - duplicates original board
+
+	/**
+	 * Copy constructor - duplicates original board
 	 * 
 	 * @param original board to copy
 	 */
@@ -133,8 +140,11 @@ public class CircuitBoard {
 		COLS = original.numCols();
 	}
 
-	/** Utility method for copy constructor
-	 * @return copy of board array */
+	/**
+	 * Utility method for copy constructor
+	 * 
+	 * @return copy of board array
+	 */
 	private char[][] getBoard() {
 		char[][] copy = new char[board.length][board[0].length];
 		for (int row = 0; row < board.length; row++) {
@@ -144,8 +154,10 @@ public class CircuitBoard {
 		}
 		return copy;
 	}
-	
-	/** Return the char at board position x,y
+
+	/**
+	 * Return the char at board position x,y
+	 * 
 	 * @param row row coordinate
 	 * @param col col coordinate
 	 * @return char at row, col
@@ -153,11 +165,13 @@ public class CircuitBoard {
 	public char charAt(int row, int col) {
 		return board[row][col];
 	}
-	
-	/** Return whether given board position is open
+
+	/**
+	 * Return whether given board position is open
+	 * 
 	 * @param row
 	 * @param col
-	 * @return true if position at (row, col) is open 
+	 * @return true if position at (row, col) is open
 	 */
 	public boolean isOpen(int row, int col) {
 		if (row < 0 || row >= board.length || col < 0 || col >= board[row].length) {
@@ -165,8 +179,10 @@ public class CircuitBoard {
 		}
 		return board[row][col] == OPEN;
 	}
-	
-	/** Set given position to be a 'T'
+
+	/**
+	 * Set given position to be a 'T'
+	 * 
 	 * @param row
 	 * @param col
 	 * @throws OccupiedPositionException if given position is not open
@@ -178,28 +194,30 @@ public class CircuitBoard {
 			throw new OccupiedPositionException("row " + row + ", col " + col + "contains '" + board[row][col] + "'");
 		}
 	}
-	
+
 	/** @return starting Point(row,col) */
 	public Point getStartingPoint() {
 		return new Point(startingPoint);
 	}
-	
+
 	/** @return ending Point(row,col) */
 	public Point getEndingPoint() {
 		return new Point(endingPoint);
 	}
-	
+
 	/** @return number of rows in this CircuitBoard */
 	public int numRows() {
 		return ROWS;
 	}
-	
+
 	/** @return number of columns in this CircuitBoard */
 	public int numCols() {
 		return COLS;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -212,5 +230,5 @@ public class CircuitBoard {
 		}
 		return str.toString();
 	}
-	
+
 }// class CircuitBoard

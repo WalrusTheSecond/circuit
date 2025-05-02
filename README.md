@@ -1,22 +1,3 @@
-
-README
-proofreading
-design/concepts - interfaces? node class? relationships between classes unclear - why a dll? strengths/weaknesses vs alts?
-testing - test class? scenarios? bugs?
-
-missing tester @author
-
-missing IUDLL class javadoc
-
-missing constructor javadoc
-
-leftover TODO
-
-missing ListIterator class javadoc
-
-missing constructor javadocs
-
-
 ****************
 * Circuit
 * Computer Science 221 Tuesday/Thursday 12 pm
@@ -27,7 +8,6 @@ missing constructor javadocs
 OVERVIEW:
 
 This program finds the shortest trace path between two components on a circuit board, using either stack based or queue based search to explore all possible paths and identify the optimal one(s).
-
 
 INCLUDED FILES:
 
@@ -96,10 +76,33 @@ To run circuit tracer
 
 PROGRAM DESIGN AND IMPORTANT CONCEPTS:
 
+The program is designed around a brute-force search approach. 
 
+Major components:
+ * CircuitTracer.java: Parses input, initializes the board, manages the search loop, and displays results.
+ * CircuitBoard.java: Parses input files and provides utility methods like checking valid moves, getting the start/end points, and creating board copies.
+ * TraceState.java: Represents a single path on the board, storing the path length, current position, and board state. It also generates next possible moves.
+ * Storage<T>: Generic container class using either a stack or queue to store TraceState objects.
+
+The program allows for easy switching between stack and queue based search via the Storage<T> class. This separation of concerns allows for a clean design.
 
 TESTING:
 
+Testing was conducted using the provided tester class, which included a series of input '.dat' files representing various valid circuit boards. The tester automatically ran the program using these files using both stack and queue storage strategies, verifying that the resulting paths were correct and, when using a queue, the shortest possible.
 
+The test suite included boards with:
+- Straightforward open paths
+- Multiple branches requiring backtracking
+- Large boards with many possible paths
+- Boards with no valid solution
+- Boards where the shortest path wasn't obvious
+
+I recompiled and reran the full test suite multiple times after making changes, ensuring that my implementation passed all tests. No bugs remain, and the program behaves as expected under all tested scenarios.
 
 DISCUSSION:
+
+During development I faced lots of small issues, the main issue I was facing is that in "CircuitTracer Invalid Input File Tests" the first two tests were failling. I probably stared at the screen for atleast an hour. I kept making tweaks and small fixes here and there but I could not get the to pass. Then my roomate came in telling me he had finished his Circuit project and that he was having the same issue as me and all he did to fix it was recompile all the java files
+ javac *.java 
+then it worked. So naturally I recompiled my program and it worked. 
+
+Another issue I faced was actually getting the CircuitTracer search algorithym to work. Luckily following the psudocode made things much easier.
