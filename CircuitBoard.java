@@ -57,11 +57,11 @@ public class CircuitBoard {
 				throw new InvalidFileFormatException("Error reading dimensions: Expected number of columns.");
 
 			}
-			int cols = fileScan.nextInt();
 
+			int cols = fileScan.nextInt();
 			fileScan.nextLine();
 
-			ROWS = rows; // replace with initialization statements using values from file
+			ROWS = rows; 
 			COLS = cols;
 
 			board = new char[ROWS][COLS];
@@ -104,27 +104,25 @@ public class CircuitBoard {
 				}
 
 			}
+
 			if (fileScan.hasNextLine()) {
 				fileScan.close();
 				throw new InvalidFileFormatException("File has extra lines beyond expected " + ROWS + " rows.");
 
 			}
+
 			if (startCount != 1 || endCount != 1) {
 				fileScan.close();
 				throw new InvalidFileFormatException("Expected one start and one end in file " + filename + ". Found "
 						+ startCount + " start(s), " + endCount + " end(s)");
 
 			}
+
 			fileScan.close();
+			
 		} catch (FileNotFoundException e) {
-			throw new FileNotFoundException("The Scanner could not read the file: " + filename);
+			throw new FileNotFoundException("Could not read file: " + filename);
 		}
-
-		// TODO: parse the given file to populate the char[][]
-		// throw FileNotFoundException if Scanner cannot read the file
-		// throw InvalidFileFormatException if any issues are encountered while parsing
-		// the file
-
 	}
 
 	/**
